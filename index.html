@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Video-Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Scott Davis <scott@thirstyhead.com>">
+    <meta name="description" content="A Web Component that previews the video and audio from your device's camera and microphone">
+    <meta name="keywords" content="HTML5 JavaScript Web Component MediaStream Recording API">
+
+
+    <style>
+      video{
+        width: 33vw;
+        border: 1px black solid;
+      }
+    </style>
+
+    <script>
+      window.addEventListener('load', init);
+
+      function init(){
+        //NOTE: intentionally global until this is converted to a class
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', sourceOpenHandler);
+
+        var sourceBuffer;
+
+        const constraints = {
+          audio: true,
+          video: true
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(
+            successCallback,
+            errorCallback);
+      }
+
+      function successCallback(stream){
+        window.stream = stream;
+        document.querySelector('video#preview').srcObject = stream;
+      }
+
+      function errorCallback(error){
+        console.error(`navigator.getUserMedia error: ${error}`);
+      }
+
+      function sourceOpenHandler(event){
+        sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');        
+      }
+    </script>
+
+  </head>
+
+  <body>
+    <h1>Video-Preview</h1>
+    <p>This is the &lt;video-preview&gt; web component in action.</p>
+
+    <video id="preview" autoplay muted playsinline></video>
+
+
+  </body>
+</html>
